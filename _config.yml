@@ -1,0 +1,105 @@
+# Site settings
+title: Song
+SEOTitle: Song
+header-img: img/post-bg-coffee.jpeg
+email: songlfneu@gmail.com
+description: "日志"
+keyword: "博客，网络，日志，IT，Web，前端开发，设计，个人网站，网站开发，web应用，微信小程序，支付宝小程序"
+url: "http://songlfly.github.io"          # your host, for absolute URL
+baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
+github_repo: "https://github.com/songlfly/songlfly.github.io.git" # you code repository
+
+# Sidebar settings
+sidebar: true                           # whether or not using Sidebar.
+sidebar-about-description: "Goals determine what you going to be!"
+sidebar-avatar: /img/about-BY-gentle.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+
+
+
+# SNS settings
+RSS: false
+zhihu_username:     songlfly
+github_username:    songlfly
+facebook_username:  songlfly
+jianshu_username:   cec2fb8ffe62
+
+
+
+
+# Build settings
+# from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
+permalink: pretty
+paginate: 10
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
+
+
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+gems: [jekyll-paginate]
+
+
+
+
+# Markdown settings
+# replace redcarpet to kramdown,
+# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
+# document: http://jekyllrb.com/docs/configuration/#kramdown
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM                            # use Github Flavored Markdown !important
+
+
+
+# 评论系统
+# Disqus（https://disqus.com/）
+
+# Gitalk
+gitalk:
+  enable: true    #是否开启Gitalk评论
+  clientID: bd24b78446d65eb4ae8c                            #生成的clientID
+  clientSecret: ''   # 请勿提交真实密钥；需要评论功能时在本地配置并轮换 OAuth App Secret
+  repo: songlfly.github.io    #仓库名称
+  owner: songlfly    #github用户名
+  admin: songlfly
+  distractionFreeMode: true #是否启用类似FB的阴影遮罩
+
+
+# 统计
+
+# Analytics settings
+# Baidu Analytics
+ba_track_id: b50bf2b12b5338a1845e33832976fd68
+
+# Google Analytics
+ga_track_id: 'UA-90855596-1'            # Format: UA-xxxxxx-xx
+ga_domain: auto                         # 跟随当前站点域名
+
+
+
+
+
+# Featured Tags
+featured-tags: true                     # 是否使用首页标签
+featured-condition-size: 1              # 相同标签数量大于这个数，才会出现在首页
+
+
+
+# Progressive Web Apps
+chrome-tab-theme-color: "#000000"
+service-worker: true
+
+
+
+# Friends
+friends: [
+    {
+        title: "Song-简书",
+        href: "https://www.jianshu.com/u/cec2fb8ffe62"
+    },{
+        title: "songlfly-github",
+        href: "https://github.com/songlfly"
+    }
+]
