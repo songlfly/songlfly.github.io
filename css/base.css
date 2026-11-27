@@ -1,0 +1,130 @@
+/* ============================================================
+   base.css — 设计变量、全局重置、通用动效与浮层
+   ============================================================ */
+:root {
+  --bg-0: #040a14;
+  --bg-1: #07182c;
+  --bg-2: #0a2138;
+  --panel-bg: rgba(10, 25, 44, 0.78);
+  --panel-bg-2: rgba(12, 31, 54, 0.66);
+  --line: rgba(70, 148, 214, 0.22);
+  --line-strong: rgba(76, 196, 255, 0.48);
+  --cyan: #3ddcff;
+  --blue: #4a92ff;
+  --green: #2fe3a7;
+  --amber: #ffb648;
+  --red: #ff5f73;
+  --purple: #a486ff;
+  --t1: #eaf5ff;
+  --t2: #9fb9d6;
+  --t3: #62809f;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.38);
+  --font: "Bahnschrift", "DIN Alternate", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+body {
+  background: var(--bg-0);
+  color: var(--t1);
+  font-family: var(--font);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+button { font-family: inherit; cursor: pointer; }
+canvas { display: block; }
+h1, h2, h3, p { margin: 0; }
+::selection { background: rgba(61, 220, 255, 0.3); }
+
+/* 滚动条 */
+.list-scroll, .modal-body { scrollbar-width: thin; scrollbar-color: rgba(76, 196, 255, .35) transparent; }
+.list-scroll::-webkit-scrollbar, .modal-body::-webkit-scrollbar { width: 4px; }
+.list-scroll::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb { background: rgba(76, 196, 255, .35); border-radius: 4px; }
+.list-scroll::-webkit-scrollbar-track, .modal-body::-webkit-scrollbar-track { background: transparent; }
+
+/* ============ 加载态 ============ */
+.boot-loader {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 50% 40%, #0b2440 0%, #040a14 72%);
+  transition: opacity .55s ease, visibility .55s ease;
+}
+.boot-loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.boot-inner { text-align: center; width: 400px; }
+.boot-mark { position: relative; width: 78px; height: 78px; margin: 0 auto 26px; }
+.boot-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(61, 220, 255, .14);
+  border-top-color: var(--cyan); border-right-color: rgba(61, 220, 255, .55);
+  animation: spin 1.1s linear infinite;
+}
+.boot-ring::after {
+  content: ""; position: absolute; inset: 12px; border-radius: 50%;
+  border: 1px dashed rgba(61, 220, 255, .28);
+  animation: spin 3.4s linear infinite reverse;
+}
+.boot-core {
+  position: absolute; inset: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 0 26px rgba(61, 220, 255, .65);
+  transform: rotate(45deg);
+}
+.boot-title { font-size: 30px; letter-spacing: 12px; font-weight: 700; text-indent: 12px; }
+.boot-sub { margin-top: 8px; font-size: 11px; letter-spacing: 3.4px; color: var(--t3); }
+.boot-bar { height: 3px; margin: 34px 0 12px; background: rgba(61, 220, 255, .12); border-radius: 3px; overflow: hidden; }
+.boot-bar i { display: block; width: 2%; height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); box-shadow: 0 0 12px var(--cyan); transition: width .22s ease; }
+.boot-step { font-size: 12px; color: var(--t2); letter-spacing: 1px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============ 浮层：tooltip / toast / modal ============ */
+.chart-tooltip {
+  position: fixed; z-index: 120; pointer-events: none; display: none;
+  min-width: 132px; padding: 9px 12px; border-radius: 6px;
+  background: rgba(6, 18, 34, .95); border: 1px solid var(--line-strong);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .5); font-size: 12px; color: var(--t1);
+}
+.chart-tooltip .tt-title { color: var(--t2); font-size: 11px; margin-bottom: 6px; }
+.chart-tooltip .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; line-height: 1.8; }
+.chart-tooltip .tt-row i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.chart-tooltip .tt-row b { font-weight: 600; }
+
+.toast-stack { position: fixed; right: 26px; bottom: 26px; z-index: 150; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.toast {
+  padding: 10px 16px; border-radius: 6px; font-size: 12.5px; letter-spacing: .5px;
+  background: rgba(9, 26, 46, .96); border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow); color: var(--t1);
+  animation: toast-in .3s ease both;
+}
+.toast.warn { border-color: rgba(255, 182, 72, .6); color: var(--amber); }
+.toast.error { border-color: rgba(255, 95, 115, .6); color: var(--red); }
+.toast.out { animation: toast-out .3s ease both; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(24px); } }
+@keyframes toast-out { to { opacity: 0; transform: translateX(24px); } }
+
+.modal-mask {
+  position: fixed; inset: 0; z-index: 160; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(2, 8, 16, .74); backdrop-filter: blur(3px);
+}
+.modal-mask.is-open { display: flex; }
+.modal-card {
+  width: 620px; max-width: 90vw; border-radius: 10px; overflow: hidden;
+  background: linear-gradient(160deg, rgba(14, 36, 62, .98), rgba(7, 20, 36, .98));
+  border: 1px solid var(--line-strong); box-shadow: 0 24px 70px rgba(0, 0, 0, .6);
+}
+.modal-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+.modal-head h3 { font-size: 15px; letter-spacing: 2px; }
+.modal-head button { background: none; border: 0; color: var(--t2); font-size: 24px; line-height: 1; padding: 0 4px; }
+.modal-head button:hover { color: var(--cyan); }
+.modal-body { padding: 18px 22px 24px; max-height: 62vh; overflow-y: auto; }
+.modal-body p { font-size: 13px; line-height: 1.85; color: var(--t2); margin-bottom: 10px; }
+.modal-body p b { color: var(--cyan); font-weight: 600; margin-right: 6px; }
+.modal-body .modal-tip { margin-top: 16px; padding: 10px 12px; background: rgba(61, 220, 255, .07); border-left: 2px solid var(--cyan); color: var(--t1); }
+.noscript { position: fixed; inset: 0; display: grid; place-items: center; background: #040a14; color: #fff; z-index: 999; }
+
+/* ============ 通用动画 ============ */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes row-in { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: none; } }
+@keyframes flash-bg { from { background: rgba(61, 220, 255, .16); } to { background: transparent; } }
+.is-new { animation: row-in .35s ease both, flash-bg 1.2s ease both; }

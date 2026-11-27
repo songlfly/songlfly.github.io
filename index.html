@@ -1,9 +1,235 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="面向生产加工制造业的可视化大屏 · 内置动态模拟数据引擎，零后端依赖">
+<title>智造中枢 | 生产加工制造可视化大屏</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/dashboard.css">
 </head>
-<body></body>
+<body>
+
+<!-- ============ 加载态 ============ -->
+<div id="boot-loader" class="boot-loader">
+  <div class="boot-inner">
+    <div class="boot-mark"><span class="boot-ring"></span><span class="boot-core"></span></div>
+    <div class="boot-title">智 造 中 枢</div>
+    <div class="boot-sub">MANUFACTURING OPERATION CENTER</div>
+    <div class="boot-bar"><i id="boot-progress"></i></div>
+    <div class="boot-step" id="boot-step">正在初始化数据模拟引擎…</div>
+  </div>
+</div>
+
+<div id="viewport" class="viewport">
+  <div id="screen" class="screen">
+
+    <!-- ============ 顶部标题栏 ============ -->
+    <header class="header">
+      <div class="header-side header-left">
+        <div class="brand-mark"><i></i><i></i><i></i></div>
+        <div class="clock-block">
+          <div class="clock-time" id="clock-time">--:--:--</div>
+          <div class="clock-date" id="clock-date">----年--月--日</div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="header-deco left"></div>
+        <h1>生产加工制造 · 运营监控大屏</h1>
+        <div class="header-sub"><span id="factory-name">华东智造基地 · 一号工厂</span><em></em><span id="shift-name">白班 08:00 - 20:00</span><em></em><span>实时模拟数据</span></div>
+        <div class="header-deco right"></div>
+      </div>
+
+      <div class="header-side header-right">
+        <div class="conn-pill" id="conn-pill"><span class="conn-dot"></span><span id="conn-text">数据正常</span></div>
+        <div class="ctrl-group">
+          <button class="ctrl-btn" id="btn-pause" type="button" title="暂停 / 继续数据刷新">暂停</button>
+          <button class="ctrl-btn" id="btn-speed" type="button" title="切换模拟倍速">1×</button>
+          <button class="ctrl-btn" id="btn-outage" type="button" title="模拟数据源断流与自动重连">模拟断流</button>
+          <button class="ctrl-btn" id="btn-reset" type="button" title="重置全部模拟数据">重置</button>
+          <button class="ctrl-btn ctrl-icon" id="btn-help" type="button" title="操作说明">?</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ 异常态横幅 ============ -->
+    <div class="conn-banner" id="conn-banner" role="status">
+      <span class="banner-icon">!</span>
+      <span id="conn-banner-text">数据源连接中断，正在尝试重连…</span>
+      <span class="banner-spin"></span>
+    </div>
+
+    <!-- ============ 核心指标卡 ============ -->
+    <section class="kpi-strip" id="kpi-strip" aria-label="核心指标卡"></section>
+
+    <!-- ============ 主体九宫格 ============ -->
+    <main class="dash-grid">
+
+      <!-- ===== 左列 ===== -->
+      <div class="dash-col col-left">
+
+        <!-- 01 生产总览 -->
+        <section class="panel" data-panel="overview">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">01</span><h2>生产总览</h2><span class="panel-en">OVERVIEW</span></div>
+            <span class="panel-note" id="overview-note">全厂</span>
+          </div>
+          <div class="panel-body overview-body">
+            <div class="ov-ring"><canvas id="chart-overview-ring"></canvas><div class="ring-center"><b id="ov-rate">--</b><small>今日达成率</small></div></div>
+            <div class="ov-right">
+              <div class="ov-pair"><div class="ov-cell"><span>计划产量</span><b id="ov-plan">--</b><i>件</i></div><div class="ov-cell"><span>实际产量</span><b id="ov-output" class="hl-cyan">--</b><i>件</i></div></div>
+              <div class="ov-pair"><div class="ov-cell"><span>当前节拍</span><b id="ov-takt">--</b><i>秒/件</i></div><div class="ov-cell"><span>在产产线</span><b id="ov-running">--</b><i>条</i></div></div>
+              <div class="ov-progress"><div class="ov-progress-head"><span>班次时间进度</span><b id="ov-shift-pct">--</b></div><div class="progress-track"><i id="ov-shift-bar"></i></div><div class="ov-progress-foot"><span id="ov-simtime">08:00</span><span>20:00</span></div></div>
+            </div>
+          </div>
+          <div class="panel-foot" id="overview-foot">—</div>
+        </section>
+
+        <!-- 02 产线运行状态 -->
+        <section class="panel" data-panel="lines">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">02</span><h2>产线运行状态</h2><span class="panel-en">LINE STATUS</span></div>
+            <span class="panel-note">点击产线可全局联动</span>
+          </div>
+          <div class="panel-body lines-body">
+            <div class="status-strip" id="lines-summary"></div>
+            <div class="lines-grid" id="lines-list"></div>
+          </div>
+        </section>
+
+        <!-- 03 物料与库存概况 -->
+        <section class="panel" data-panel="material">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">03</span><h2>物料与库存概况</h2><span class="panel-en">MATERIAL</span></div>
+            <span class="panel-note" id="material-note">安全库存预警</span>
+          </div>
+          <div class="panel-body material-body">
+            <div id="material-list" class="material-list"></div>
+            <div class="mini-stats" id="material-stats"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ===== 中列 ===== -->
+      <div class="dash-col col-center">
+
+        <!-- 04 产量与达成率 -->
+        <section class="panel" data-panel="output">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">04</span><h2>产量与达成率</h2><span class="panel-en">OUTPUT &amp; ATTAINMENT</span></div>
+            <div class="range-tabs" id="output-range"><button class="active" data-range="24" type="button">近 2 小时</button><button data-range="48" type="button">近 4 小时</button><button data-range="96" type="button">全班次</button></div>
+          </div>
+          <div class="panel-body output-body">
+            <div class="chart-legend" id="output-legend"></div>
+            <div class="canvas-wrap grow"><canvas id="chart-output"></canvas></div>
+            <div class="mini-stats" id="output-stats"></div>
+          </div>
+        </section>
+
+        <!-- 05 质量指标 -->
+        <section class="panel" data-panel="quality">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">05</span><h2>质量指标</h2><span class="panel-en">QUALITY</span></div>
+            <span class="panel-note" id="quality-note">一次合格率</span>
+          </div>
+          <div class="panel-body quality-body">
+            <div class="quality-left"><div class="canvas-wrap"><canvas id="chart-yield"></canvas></div><div class="sub-caption">良率趋势（%）</div></div>
+            <div class="quality-right"><div class="canvas-wrap"><canvas id="chart-defects"></canvas></div><div class="sub-caption">不良品分类分布</div></div>
+            <div class="quality-stats" id="quality-stats"></div>
+          </div>
+        </section>
+
+        <!-- 06 订单进度 -->
+        <section class="panel" data-panel="orders">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">06</span><h2>订单 / 工单进度</h2><span class="panel-en">WORK ORDER</span></div>
+            <span class="panel-note" id="orders-note">按交期排序</span>
+          </div>
+          <div class="panel-body orders-body">
+            <div class="mini-stats compact" id="orders-summary"></div>
+            <div class="orders-grid" id="orders-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ===== 右列 ===== -->
+      <div class="dash-col col-right">
+
+        <!-- 07 设备运行率 -->
+        <section class="panel" data-panel="devices">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">07</span><h2>设备运行率</h2><span class="panel-en">EQUIPMENT OEE</span></div>
+            <span class="panel-note" id="device-note">全厂设备</span>
+          </div>
+          <div class="panel-body devices-body">
+            <div class="device-top">
+              <div class="gauge-box"><canvas id="chart-gauge"></canvas></div>
+              <div class="donut-box"><canvas id="chart-device-donut"></canvas><div class="ring-center small"><b id="dev-online">--</b><small>在线设备</small></div></div>
+            </div>
+            <div class="rank-title">单机运行率排名 <span>需关注 LOW 5</span></div>
+            <div id="device-rank" class="rank-list"></div>
+          </div>
+        </section>
+
+        <!-- 08 异常告警 -->
+        <section class="panel" data-panel="alerts">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">08</span><h2>异常告警</h2><span class="panel-en">ALARMS</span></div>
+            <span class="panel-note" id="alert-note">实时告警池</span>
+          </div>
+          <div class="panel-body alerts-body">
+            <div class="mini-stats compact" id="alert-stats"></div>
+            <div class="list-scroll" id="alert-list"></div>
+          </div>
+        </section>
+
+        <!-- 09 实时事件流 -->
+        <section class="panel" data-panel="events">
+          <div class="panel-head">
+            <div class="panel-title"><span class="panel-idx">09</span><h2>实时事件流</h2><span class="panel-en">LIVE EVENTS</span></div>
+            <span class="panel-note"><i class="live-dot"></i>LIVE</span>
+          </div>
+          <div class="panel-body events-body"><div class="list-scroll" id="event-list"></div></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ============ 底部状态条 ============ -->
+    <footer class="footer">
+      <span class="footer-left"><i class="foot-dot"></i>数据源：内置动态模拟引擎 · 零后端依赖</span>
+      <span class="footer-center" id="footer-marquee">全厂生产数据实时联动中</span>
+      <span class="footer-right" id="footer-meta">TICK 0000 · 1920×1080 · v1.0.0</span>
+    </footer>
+
+    <div class="stale-mask" id="stale-mask"></div>
+  </div>
+</div>
+
+<div id="chart-tooltip" class="chart-tooltip"></div>
+<div id="toast-stack" class="toast-stack"></div>
+
+<!-- ============ 操作说明 ============ -->
+<div class="modal-mask" id="help-modal">
+  <div class="modal-card">
+    <div class="modal-head"><h3>操作说明 / HELP</h3><button id="btn-help-close" type="button">×</button></div>
+    <div class="modal-body">
+      <p><b>数据联动</b>：所有模块共用同一份模拟状态。产线状态由设备状态推导；产量驱动工单进度与物料消耗；良率、库存、节拍共同触发告警生成与自动恢复。</p>
+      <p><b>产线下钻</b>：点击「产线运行状态」中的任一产线，可全局聚焦该产线，指标卡、趋势图、订单、告警同步切换；再次点击取消聚焦。</p>
+      <p><b>控制按钮</b>：暂停 / 继续数据刷新、切换 1× / 2× / 4× 模拟倍速、模拟数据源断流（自动重连演示异常态）、重置全部数据。</p>
+      <p><b>时间口径</b>：每个刷新周期代表 5 分钟模拟时间，班次 08:00–20:00；趋势图按采样点滚动，计划达成率按班次进度折算。</p>
+      <p class="modal-tip">提示：本项目为纯前端静态项目，所有图表为原生 Canvas 绘制，不依赖任何 CDN 或后端接口，可离线运行。</p>
+    </div>
+  </div>
+</div>
+
+<noscript><div class="noscript">请启用 JavaScript 以运行可视化大屏。</div></noscript>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mock-engine.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/app.js"></script>
+</body>
 </html>
